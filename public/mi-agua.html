@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles - Mi Agua</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #020617; }
+        /* Suaviza la carga de imágenes grandes */
+        img { opacity: 0; transition: opacity 0.5s ease-in-out; }
+        img.loaded { opacity: 1; }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen selection:bg-blue-500/30">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+        
+        <a href="/" class="inline-flex items-center text-blue-500 hover:text-blue-400 font-bold mb-10 transition-all hover:-translate-x-2 group">
+            <span class="mr-2 transition-transform group-hover:scale-125">←</span> Volver al portafolio
+        </a>
+
+        <div class="text-center mb-24">
+            <h1 class="text-6xl md:text-7xl font-extrabold text-white tracking-tighter">Proyecto: Mi Agua</h1>
+            <div class="h-1.5 w-32 bg-blue-600 mx-auto mt-8 rounded-full shadow-[0_0_20px_rgba(37,99,235,0.5)]"></div>
+        </div>
+
+        <div class="flex flex-col gap-32 items-center">
+            
+            <div class="w-full max-w-5xl space-y-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-[2rem] overflow-hidden shadow-2xl shadow-black">
+                    <img 
+                        src="/img/dashboard.png" 
+                        alt="Dashboard de monitoreo" 
+                        class="w-full h-auto block"
+                        onload="this.classList.add('loaded')"
+                    >
+                </div>
+                <div class="text-center px-4">
+                    <h3 class="text-2xl font-bold text-white mb-3 tracking-tight">Interfaz de Monitoreo en Tiempo Real</h3>
+                    <p class="text-slate-400 text-lg italic max-w-3xl mx-auto">
+                        "Visualización de métricas críticas mediante un dashboard desarrollado en Django, optimizado para el análisis de flujo ultrasónico."
+                    </p>
+                </div>
+            </div>
+
+            <div class="w-full max-w-5xl space-y-8">
+                <div class="bg-slate-900 border border-slate-800 rounded-[2rem] overflow-hidden shadow-2xl shadow-black">
+                    <img 
+                        src="/img/hardware.webp" 
+                        alt="Hardware Mi Agua" 
+                        class="w-full h-auto block"
+                        onload="this.classList.add('loaded')"
+                    >
+                </div>
+                <div class="text-center px-4">
+                    <h3 class="text-2xl font-bold text-white mb-3 tracking-tight">Infraestructura IoT y Sensores</h3>
+                    <p class="text-slate-400 text-lg italic max-w-3xl mx-auto">
+                        "Montaje físico del nodo sensor utilizando microcontroladores ESP32 y sensores de flujo para captura de datos en el borde (Edge)."
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="mt-40 p-12 bg-gradient-to-b from-slate-900/50 to-transparent border border-slate-800 rounded-[3rem] max-w-4xl mx-auto mb-20">
+            <div class="flex items-center gap-6 mb-8 justify-center">
+                <div class="h-px bg-slate-800 flex-grow"></div>
+                <h3 class="text-blue-500 font-bold uppercase tracking-[0.4em] text-xs">Arquitectura del Sistema</h3>
+                <div class="h-px bg-slate-800 flex-grow"></div>
+            </div>
+            <p class="text-slate-300 leading-relaxed text-center text-xl">
+                Para garantizar la integridad en la búsqueda de soluciones óptimas, implementé un protocolo 
+                <span class="text-white font-bold border-b-2 border-blue-500/50">MQTT</span> que asegura la telemetría desde el sensor hasta la instancia 
+                <span class="text-white font-bold border-b-2 border-blue-500/50">AWS EC2</span>. Todo el entorno backend y las bases de datos operan bajo contenedores 
+                <span class="text-white font-bold border-b-2 border-blue-500/50">Docker</span> para facilitar el despliegue y la escalabilidad.
+            </p>
+        </div>
+
+    </div>
+
+    <footer class="py-12 text-center border-t border-slate-900 bg-black/20">
+        <p class="text-slate-500 font-mono text-xs tracking-widest uppercase">
+            Ingeniería de Ciclo Completo • Ariel Quezada • 2026
+        </p>
+    </footer>
+</body>
+</html>

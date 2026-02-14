@@ -7,6 +7,11 @@
     "module": "ESNext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "gsap": ["node_modules/gsap/types/index.d.ts"],
+      "gsap/ScrollTrigger": ["node_modules/gsap/types/scroll-trigger.d.ts"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
