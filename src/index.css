@@ -1,1 +1,52 @@
 @import "tailwindcss";
+
+:root {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+@layer base {
+  body {
+    background-color: #030712;
+    color: #f8fafc;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-slate-900/40 backdrop-blur-xl border border-white/5;
+  }
+  
+  .glass-card {
+    @apply bg-gradient-to-br from-slate-800/40 to-slate-900/80 backdrop-blur-2xl border border-white/10 shadow-2xl;
+  }
+
+  .text-gradient {
+    @apply text-transparent bg-clip-text bg-gradient-to-r;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #020617;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Global simple float animation */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
