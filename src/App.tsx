@@ -147,7 +147,7 @@ function App() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
             </span>
-            <span className="text-[11px] font-bold text-blue-400 uppercase tracking-[0.15em]">Ingeniero de Software & Redes</span>
+            <span className="text-[11px] font-bold text-blue-400 uppercase tracking-[0.15em]">Ingeniero Informatico & Tecnico de Redes</span>
           </div>
           
           <h1 className="hero-text text-7xl md:text-8xl lg:text-[7.5rem] font-black text-white leading-[1.05] tracking-tighter mb-8">
@@ -253,7 +253,6 @@ function App() {
               <h3 className="text-5xl font-bold text-white tracking-tight">Proyectos Destacados</h3>
             </div>
             <p className="text-slate-500 font-mono text-sm uppercase tracking-widest hidden md:block">
-              // Mostrando {mis_proyectos.length} en producción
             </p>
           </div>
 

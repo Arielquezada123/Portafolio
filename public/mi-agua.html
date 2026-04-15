@@ -55,6 +55,130 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
         }
+
+        /* ── Coverflow Carousel ── */
+        .cflow-scene {
+            /* viewport: clips sides, adds depth */
+            position: relative;
+            width: 100%;
+            /* match 16/9 aspect ratio height via padding-top */
+            padding-top: 56.25%;
+            perspective: 1200px;
+            overflow: hidden;
+        }
+        .cflow-stage {
+            /* absolute fill, holds all cards */
+            position: absolute;
+            inset: 0;
+            transform-style: preserve-3d;
+        }
+        .cflow-card {
+            /* each card: full size, absolutely centered */
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border-radius: 1.2rem;
+            overflow: hidden;
+            cursor: pointer;
+            /* smooth 3D transition */
+            transition:
+                transform 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity   0.65s ease,
+                filter    0.65s ease,
+                box-shadow 0.65s ease;
+            will-change: transform, opacity, filter;
+        }
+        .cflow-card {
+            background: #0b1120; /* dark bg so contain doesn't show white gaps */
+        }
+        .cflow-card img {
+            width: 100%; height: 100%;
+            object-fit: contain;  /* show the full screenshot, no cropping */
+            display: block;
+            /* override the global img animation for carousel cards */
+            opacity: 1 !important;
+            transform: none !important;
+            transition: none !important;
+        }
+        /* active card state */
+        .cflow-card.is-active {
+            z-index: 10;
+            box-shadow: 0 32px 80px -10px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08);
+        }
+        /* side cards: dimmed + shifted */
+        .cflow-card:not(.is-active) {
+            z-index: 5;
+            filter: brightness(0.45) blur(1px);
+        }
+        /* slide label */
+        .slide-label {
+            position: absolute;
+            bottom: 1rem; left: 50%; transform: translateX(-50%) translateY(6px);
+            background: rgba(2,6,23,0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            font-size: 0.72rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            padding: 0.35rem 1rem;
+            border-radius: 9999px;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            white-space: nowrap;
+        }
+        .cflow-card.is-active:hover .slide-label {
+            opacity: 1; transform: translateX(-50%) translateY(0);
+        }
+        /* nav buttons */
+        .carousel-btn {
+            position: absolute;
+            top: 50%; transform: translateY(-50%);
+            z-index: 30;
+            background: rgba(2,6,23,0.65);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #94a3b8;
+            width: 2.8rem; height: 2.8rem;
+            border-radius: 9999px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background 0.25s, color 0.25s, transform 0.25s;
+            font-size: 1.1rem; line-height: 1;
+        }
+        .carousel-btn:hover { background: rgba(59,130,246,0.4); color:#fff; transform: translateY(-50%) scale(1.1); }
+        .carousel-btn.prev { left: 1rem; }
+        .carousel-btn.next { right: 1rem; }
+        /* dots */
+        .carousel-dots {
+            display: flex; justify-content: center;
+            gap: 0.45rem; margin-top: 1.25rem;
+        }
+        .carousel-dot {
+            width: 6px; height: 6px;
+            border-radius: 9999px;
+            background: rgba(148,163,184,0.3);
+            border: none; cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            padding: 0;
+        }
+        .carousel-dot.active { background: #60a5fa; transform: scaleX(2.5); }
+
+        /* result / boleta image */
+        .result-img-wrap {
+            position: relative;
+            max-width: 580px;
+            margin: 0 auto;
+        }
+        .result-img-wrap::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 1.5rem;
+            background: linear-gradient(135deg, rgba(59,130,246,0.4), rgba(34,211,238,0.2));
+            z-index: -1;
+            filter: blur(8px);
+        }
     </style>
 </head>
 <body class="text-slate-200 min-h-screen selection:bg-blue-500/30 selection:text-white font-sans font-light relative">
@@ -93,27 +217,91 @@
 
         <!-- Gallery / Study Sections -->
         <div class="flex flex-col gap-32 items-center">
-            
+            <!-- ══ Carousel: vistas de la app ══ -->
             <section class="w-full">
-                <div class="glass-panel rounded-[2.5rem] overflow-hidden group mb-8">
-                    <div class="relative w-full aspect-[16/9] md:aspect-auto">
-                        <div class="absolute inset-0 bg-blue-500/10 z-10 mix-blend-overlay group-hover:bg-transparent transition-colors duration-700"></div>
-                        <img 
-                            src="/img/dashboard.png" 
-                            alt="Dashboard de monitoreo" 
-                            class="w-full h-full object-cover block grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700 hover:scale-[1.02]"
-                            onload="this.classList.add('loaded')"
-                            onerror="this.src='https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1600'; this.classList.add('loaded')"
-                        >
-                    </div>
-                </div>
-                
+                <div class="glass-panel rounded-[2.5rem] overflow-hidden mb-8 relative">
+
+                    <!-- Coverflow scene -->
+                    <div class="cflow-scene" id="cfScene">
+                        <div class="cflow-stage" id="cfStage">
+
+                            <div class="cflow-card" data-label="Alertas">
+                                <img src="/img/alertas.png" alt="Módulo de Alertas">
+                                <span class="slide-label">Alertas</span>
+                            </div>
+
+                            <div class="cflow-card" data-label="Gestión de Datos">
+                                <img src="/img/crud.png" alt="Gestión CRUD">
+                                <span class="slide-label">Gestión de Datos</span>
+                            </div>
+
+                            <div class="cflow-card" data-label="Facturación">
+                                <img src="/img/facturacion.png" alt="Módulo de Facturación">
+                                <span class="slide-label">Facturación</span>
+                            </div>
+
+                            <div class="cflow-card" data-label="Historial">
+                                <img src="/img/historial.png" alt="Historial de Lecturas">
+                                <span class="slide-label">Historial</span>
+                            </div>
+
+                            <div class="cflow-card" data-label="Mapa &amp; Variables">
+                                <img src="/img/mapa_variables.png" alt="Mapa con Variables">
+                                <span class="slide-label">Mapa &amp; Variables</span>
+                            </div>
+
+                            <div class="cflow-card" data-label="Mapa General">
+                                <img src="/img/mapa.png" alt="Mapa General">
+                                <span class="slide-label">Mapa General</span>
+                            </div>
+
+                            <div class="cflow-card" data-label="Visor de Boleta">
+                                <img src="/img/visorboleta.png" alt="Visor de Boleta">
+                                <span class="slide-label">Visor de Boleta</span>
+                            </div>
+
+                        </div><!-- /cflow-stage -->
+
+                        <!-- nav buttons live inside the scene so they sit on top -->
+                        <button class="carousel-btn prev" aria-label="Anterior" id="cfPrev">&#8592;</button>
+                        <button class="carousel-btn next" aria-label="Siguiente" id="cfNext">&#8594;</button>
+                    </div><!-- /cflow-scene -->
+
+                    <!-- dots -->
+                    <div class="carousel-dots py-4" id="appCarouselDots"></div>
+
+                </div><!-- /glass-panel -->
+
                 <div class="max-w-4xl mx-auto text-center px-4">
-                    <h3 class="text-3xl font-bold text-white mb-4 tracking-tight">Centro de Control & Monitoreo</h3>
+                    <h3 class="text-3xl font-bold text-white mb-4 tracking-tight">Centro de Control &amp; Monitoreo</h3>
                     <p class="text-slate-400 text-lg leading-relaxed font-light">
                         Visualización de métricas críticas mediante un dashboard desarrollado en <strong class="text-white font-medium">Django</strong>, optimizado para el análisis de flujo ultrasónico. Se integran gráficos interactivos con actualización de latencia ultrabaja.
                     </p>
                 </div>
+            </section>
+
+            <!-- ══ Resultado: Boleta generada ══ -->
+            <section class="w-full flex flex-col items-center gap-8 -mt-8">
+                <div class="flex items-center gap-6 w-full max-w-4xl">
+                    <div class="h-px bg-gradient-to-r from-transparent to-cyan-500/40 flex-grow"></div>
+                    <span class="text-cyan-400 font-bold uppercase tracking-[0.3em] text-[10px] whitespace-nowrap">Resultado generado</span>
+                    <div class="h-px bg-gradient-to-l from-transparent to-cyan-500/40 flex-grow"></div>
+                </div>
+
+                <div class="result-img-wrap">
+                    <div class="glass-panel rounded-[1.5rem] overflow-hidden p-3">
+                        <img
+                            src="/img/boleta.png"
+                            alt="Boleta generada por el sistema"
+                            class="w-full rounded-xl object-contain block"
+                            onload="this.classList.add('loaded')"
+                        >
+                    </div>
+                </div>
+
+                <p class="text-slate-400 text-base text-center max-w-lg font-light">
+                    Boleta digital generada automáticamente por el sistema a partir de las lecturas del medidor, lista para su distribución al cliente final.
+                </p>
             </section>
 
             <section class="w-full">
@@ -204,6 +392,136 @@
             
             images.forEach(img => observer.observe(img));
         });
+    </script>
+
+    <!-- Coverflow carousel logic -->
+    <script>
+    (function () {
+        'use strict';
+
+        /* ── Config ── */
+        const AUTOPLAY_MS   = 4500;   // ms between auto-advances
+        const SIDE_OFFSET   = 62;     // % translateX for side cards
+        const SIDE_ROTATE   = 42;     // deg rotateY for side cards
+        const SIDE_SCALE    = 0.78;   // scale for side cards
+        const FAR_OFFSET    = 110;    // % translateX for hidden cards
+
+        /* ── DOM ── */
+        const scene   = document.getElementById('cfScene');
+        const stage   = document.getElementById('cfStage');
+        const dotsBox = document.getElementById('appCarouselDots');
+        const btnPrev = document.getElementById('cfPrev');
+        const btnNext = document.getElementById('cfNext');
+
+        if (!scene || !stage) return;
+
+        const cards = Array.from(stage.querySelectorAll('.cflow-card'));
+        const total = cards.length;
+        let current = 0;
+
+        /* ── Build dots ── */
+        cards.forEach((_, i) => {
+            const d = document.createElement('button');
+            d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+            d.setAttribute('aria-label', 'Ir a imagen ' + (i + 1));
+            d.addEventListener('click', () => { stopAutoplay(); goTo(i); scheduleAutoplay(); });
+            dotsBox.appendChild(d);
+        });
+        const dots = Array.from(dotsBox.querySelectorAll('.carousel-dot'));
+
+        /* ── Layout each card via 3-D coverflow ── */
+        function applyLayout(idx) {
+            cards.forEach((card, i) => {
+                const offset = i - idx;   // relative position to active
+                let tx, ry, sc, op;
+
+                if (offset === 0) {
+                    // active
+                    tx = 0; ry = 0; sc = 1; op = 1;
+                    card.classList.add('is-active');
+                } else if (offset === -1) {
+                    // immediately left
+                    tx = -SIDE_OFFSET; ry = SIDE_ROTATE; sc = SIDE_SCALE; op = 0.75;
+                    card.classList.remove('is-active');
+                } else if (offset === 1) {
+                    // immediately right
+                    tx = SIDE_OFFSET; ry = -SIDE_ROTATE; sc = SIDE_SCALE; op = 0.75;
+                    card.classList.remove('is-active');
+                } else if (offset < -1) {
+                    // far left
+                    tx = -FAR_OFFSET; ry = SIDE_ROTATE; sc = SIDE_SCALE * 0.75; op = 0;
+                    card.classList.remove('is-active');
+                } else {
+                    // far right
+                    tx = FAR_OFFSET; ry = -SIDE_ROTATE; sc = SIDE_SCALE * 0.75; op = 0;
+                    card.classList.remove('is-active');
+                }
+
+                card.style.transform = `translateX(${tx}%) rotateY(${ry}deg) scale(${sc})`;
+                card.style.opacity   = op;
+                card.style.zIndex    = offset === 0 ? 10 : Math.max(1, 5 - Math.abs(offset));
+            });
+
+            /* update dots */
+            dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+        }
+
+        function goTo(idx) {
+            current = ((idx % total) + total) % total;
+            applyLayout(current);
+        }
+
+        /* ── Autoplay: uses recursive setTimeout – never stacks ── */
+        let autoTimer = null;
+        let paused    = false;
+
+        function scheduleAutoplay() {
+            clearTimeout(autoTimer);
+            if (paused) return;
+            autoTimer = setTimeout(() => {
+                goTo(current + 1);
+                scheduleAutoplay();   // schedule next tick only after this one fires
+            }, AUTOPLAY_MS);
+        }
+
+        function stopAutoplay() {
+            paused = true;
+            clearTimeout(autoTimer);
+        }
+
+        function resumeAutoplay() {
+            paused = false;
+            scheduleAutoplay();
+        }
+
+        /* ── Buttons ── */
+        btnPrev.addEventListener('click', () => { stopAutoplay(); goTo(current - 1); resumeAutoplay(); });
+        btnNext.addEventListener('click', () => { stopAutoplay(); goTo(current + 1); resumeAutoplay(); });
+
+        /* ── Click on side cards ── */
+        cards.forEach((card, i) => {
+            card.addEventListener('click', () => {
+                if (i !== current) { stopAutoplay(); goTo(i); resumeAutoplay(); }
+            });
+        });
+
+        /* ── Pause on hover ── */
+        scene.addEventListener('mouseenter', stopAutoplay);
+        scene.addEventListener('mouseleave', resumeAutoplay);
+
+        /* ── Touch / swipe ── */
+        let touchX = 0;
+        scene.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; stopAutoplay(); }, { passive: true });
+        scene.addEventListener('touchend',   e => {
+            const diff = touchX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+            resumeAutoplay();
+        }, { passive: true });
+
+        /* ── Init ── */
+        applyLayout(0);
+        scheduleAutoplay();
+    })();
     </script>
 </body>
 </html>
